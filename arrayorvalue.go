@@ -7,6 +7,10 @@ type ArrayOrValue[T any] struct {
 	Array []T
 }
 
+func NewArrayOrValue[T any]() ArrayOrValue[T] {
+	return ArrayOrValue[T]{Array: []T{}}
+}
+
 func (aov ArrayOrValue[T]) Len() int {
 	if len(aov.Array) == 0 {
 		return 1

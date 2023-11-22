@@ -7,7 +7,7 @@ import (
 
 type Policy struct {
 	Version    PolicyVersion           `json:"Version"`
-	Id         string                  `json:"Id"`
+	Id         string                  `json:"Id,omitempty"`
 	Statements ArrayOrValue[Statement] `json:"Statement"`
 }
 
@@ -15,7 +15,7 @@ type Policy struct {
 func NewPolicy() Policy {
 	return Policy{
 		Version:    Version2012,
-		Statements: ArrayOrValue[Statement]{},
+		Statements: NewArrayOrValue[Statement](),
 	}
 }
 

@@ -29,3 +29,52 @@ func TestCanDeserializeLegacySchema(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, serializedPol, string(mPol))
 }
+
+func TestS3UserAccessPolicy(t *testing.T) {
+	pStr := `{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Effect": "Allow",
+			"Action": [
+				"s3:ListAllMyBuckets",
+				"s3:GetBucketLocation"
+			],
+			"Resource": "arn:aws:s3:::*"
+		},
+		{
+			"Effect": "Allow",
+			"Action": "s3:ListBucket",
+			"Resource": "arn:aws:s3:::BUCKET-NAME",
+			"Condition": {
+				"StringLike": {
+					"s3:prefix": [
+						"",
+						"home/",
+						"home/${aws:username}/"
+					]
+				}
+			}
+		},
+		{
+			"Effect": "Allow",
+			"Action": "s3:*",
+			"Resource": [
+				"arn:aws:s3:::BUCKET-NAME/home/${aws:username}",
+				"arn:aws:s3:::BUCKET-NAME/home/${aws:username}/*"
+			]
+		}
+	]
+}
+`
+
+	pol, err := UnmarshalPolicy([]byte(pStr))
+	assert.NoError(t, err)
+	assert.Equal(t, Version2012, pol.Version)
+	assert.Equal(t, 3, pol.Statements.Len())
+
+	mPol, err := pol.MarshalPretty()
+	assert.NoError(t, err)
+	assert.Equal(t, pStr, string(mPol))
+
+}

@@ -30,6 +30,10 @@ func (e InvalidStatementError) Error() string {
 }
 
 func (s *Statement) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" || string(data) == `""` {
+		return nil
+	}
+
 	type lStatement Statement
 	var l lStatement
 	if err := json.Unmarshal(data, &l); err != nil {
@@ -60,6 +64,6 @@ func (s *Statement) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (s *Statement) MarshalJSON() ([]byte, error) {
-	return json.Marshal(s)
-}
+// func (s *Statement) MarshalJSON() ([]byte, error) {
+// 	return json.Marshal(s)
+// }
